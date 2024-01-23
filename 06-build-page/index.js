@@ -5,24 +5,27 @@ const pathToStylesDir = path.join(__dirname, 'styles');
 const pathToComponentsDir = path.join(__dirname, 'components');
 const pathToAssetsDir = path.join(__dirname, 'assets');
 
-const copyAssets = () => {
-  const newPathToAssets = path.join(pathToDistDir, 'assets');
-  fs.mkdir(newPathToAssets, { recursive: true }, (err) => {
-    if (!err) {
-      fs.readdir(pathToAssetsDir, (err, files) => {
-        files.forEach((file) => {
-          const pathToOriginFile = path.join(pathToAssetsDir, file);
-          const pathToCopiedFile = path.join(newPathToAssets, file);
-          fs.cp(
-            pathToOriginFile,
-            pathToCopiedFile,
-            { recursive: true },
-            () => {},
-          );
+const copy = (source, destination) => {
+  fs.mkdir(destination, { recursive: true }, () => {
+    fs.readdir(source, (err, files) => {
+      files.forEach((file) => {
+        const sourcePath = path.join(source, file);
+        const targetPath = path.join(destination, file);
+        fs.stat(sourcePath, (_, stats) => {
+          if (stats.isDirectory()) {
+            copy(sourcePath, targetPath);
+          } else {
+            fs.copyFile(sourcePath, targetPath, () => {});
+          }
         });
       });
-    }
+    });
   });
+};
+
+const copyAssets = () => {
+  const newPathToAssets = path.join(pathToDistDir, 'assets');
+  copy(pathToAssetsDir, newPathToAssets);
 };
 
 const mergeStyles = () => {
