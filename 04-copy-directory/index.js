@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const pathToOriginDir = path.join(__dirname, '/files');
-const pathToCopiedDir = path.join(__dirname, '/files-copy');
+const pathToOriginDir = path.join(__dirname, 'files');
+const pathToCopiedDir = path.join(__dirname, 'files-copy');
 
 fs.mkdir(pathToCopiedDir, { recursive: true }, (err) => {
   if (err) console.log(err);

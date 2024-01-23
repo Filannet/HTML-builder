@@ -50,6 +50,7 @@ const handleTemplate = () => {
   let headerData = '';
   let articlesData = '';
   let footerData = '';
+  let aboutData = '';
   const template = new fs.ReadStream(path.join(__dirname, 'template.html'));
   template.on('data', (chunk) => (templateData += chunk));
   template.on('end', () => {
@@ -71,10 +72,26 @@ const handleTemplate = () => {
           templateData = templateData.replace('{{header}}', headerData);
           templateData = templateData.replace('{{articles}}', articlesData);
           templateData = templateData.replace('{{footer}}', footerData);
-          const output = fs.createWriteStream(
-            path.join(pathToDistDir, 'index.html'),
-          );
-          output.write(templateData);
+
+          const writeToFile = () => {
+            const output = fs.createWriteStream(
+              path.join(pathToDistDir, 'index.html'),
+            );
+            output.write(templateData);
+          };
+
+          fs.stat(path.join(pathToComponentsDir, 'about.html'), (err) => {
+            if (!err && templateData.includes('{{about}}')) {
+              const about = new fs.ReadStream(
+                path.join(pathToComponentsDir, 'about.html'),
+              );
+              about.on('data', (chunk) => (aboutData += chunk));
+              about.on('end', () => {
+                templateData = templateData.replace('{{about}}', aboutData);
+                writeToFile();
+              });
+            } else writeToFile();
+          });
         });
       });
     });

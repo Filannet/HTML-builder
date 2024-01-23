@@ -1,6 +1,7 @@
 const fs = require('fs');
 const readline = require('readline');
-const pathToFile = `${__dirname}/text.txt`;
+const path = require('path');
+const pathToFile = path.join(__dirname, 'text.txt');
 const output = fs.createWriteStream(pathToFile);
 
 let rl = readline.createInterface(process.stdin, process.stdout);
